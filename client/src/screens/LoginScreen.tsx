@@ -54,7 +54,7 @@ export default function LoginScreen() {
             Log in to access your task management dashboard
           </Text>
           <Text className="text-xs text-gray-400 mt-2 text-center">
-            Tip: Use admin@test.com for Admin role or employee@test.com for Employee role.
+            Tip: Use admin@test.com (pwd: admin123) or employee@test.com (pwd: employee123).
           </Text>
         </View>
 

@@ -12,7 +12,7 @@ async function initDb() {
   const host = process.env.DB_HOST || 'localhost';
   const user = process.env.DB_USER || 'root';
   const password = process.env.DB_PASSWORD || '';
-  const database = process.env.DB_NAME || 'polygon_db';
+  const database = process.env.DB_NAME || 'employee_tasks_db';
 
   console.log(`Connecting to MySQL at ${host} as ${user}...`);
 
@@ -33,6 +33,22 @@ async function initDb() {
         password VARCHAR(255) NOT NULL,
         role ENUM('admin', 'employee') DEFAULT 'employee',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    console.log('Creating tasks table...');
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS tasks (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        status ENUM('Pending', 'In Progress', 'Completed') DEFAULT 'Pending',
+        assignee_id INT,
+        creator_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (assignee_id) REFERENCES users(id) ON DELETE SET NULL,
+        FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
 

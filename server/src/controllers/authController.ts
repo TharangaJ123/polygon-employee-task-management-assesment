@@ -1,20 +1,5 @@
 import { type Request, type Response } from 'express';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'polygon_db',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
+import { AuthService } from '../services/AuthService.js';
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
@@ -25,29 +10,24 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   }
 
   try {
-    const [rows]: any = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    const user = await AuthService.getUserByEmail(email);
     
-    if (rows.length === 0) {
+    if (!user) {
       res.status(401).json({ message: 'Invalid credentials' });
       return;
     }
 
-    const user = rows[0];
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await AuthService.validatePassword(password, user.password!);
 
     if (!isPasswordValid) {
       res.status(401).json({ message: 'Invalid credentials' });
       return;
     }
 
-    // Omit password from user object
+    // Omit password from response object
     const { password: _, ...userWithoutPassword } = user;
 
-    const token = jwt.sign(
-      { userId: user.id, role: user.role },
-      process.env.JWT_SECRET || 'fallback_secret',
-      { expiresIn: '24h' }
-    );
+    const token = AuthService.generateToken(user);
 
     res.json({
       user: userWithoutPassword,
