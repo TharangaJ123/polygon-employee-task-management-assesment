@@ -26,7 +26,6 @@ export default function App() {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <RootNavigator />
-          <StatusBar style="auto" />
         </PersistGate>
       </Provider>
     </SafeAreaProvider>

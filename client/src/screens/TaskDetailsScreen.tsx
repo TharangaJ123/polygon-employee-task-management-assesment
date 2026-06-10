@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
+import { updateTask, removeTask } from '../store/slices/tasksSlice';
 import { API_BASE_URL } from '../utils/api';
 import { AdminStackParamList, EmployeeStackParamList } from '../types';
 
@@ -12,6 +13,7 @@ type DetailsRouteProp = RouteProp<AdminStackParamList | EmployeeStackParamList, 
 export default function TaskDetailsScreen() {
   const route = useRoute<DetailsRouteProp>();
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const { task } = route.params;
   const { user, token } = useSelector((state: RootState) => state.auth);
 
@@ -38,6 +40,7 @@ export default function TaskDetailsScreen() {
 
       if (res.ok) {
         setStatus(newStatus);
+        dispatch(updateTask({ ...task, status: newStatus }));
         Alert.alert('Success', 'Status updated successfully');
       } else {
         const data = await res.json();
@@ -64,6 +67,7 @@ export default function TaskDetailsScreen() {
               headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
+              dispatch(removeTask(task.id));
               Alert.alert('Success', 'Task deleted');
               navigation.goBack();
             } else {
@@ -80,7 +84,7 @@ export default function TaskDetailsScreen() {
   };
 
   return (
-    <View className="flex-1 bg-polygon-bg">
+    <View className="flex-1 bg-polygon-bg dark:bg-gray-900">
       <View className="bg-polygon-purple pt-14 pb-6 px-6 rounded-b-[30px] shadow-md z-10">
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center">
@@ -108,21 +112,21 @@ export default function TaskDetailsScreen() {
 
       <ScrollView className="flex-1 px-6 pt-6">
 
-      <View className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
-        <Text className="text-xl font-bold text-gray-900 mb-2">{task.title}</Text>
-        <Text className="text-gray-600 mb-4">{task.description || 'No description provided.'}</Text>
+      <View className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+        <Text className="text-xl font-bold text-gray-900 dark:text-white mb-2">{task.title}</Text>
+        <Text className="text-gray-600 dark:text-gray-400 mb-4">{task.description || 'No description provided.'}</Text>
         
         <View className="flex-row items-center mb-2">
-          <Text className="text-sm text-gray-500 w-24">Assignee:</Text>
-          <Text className="text-sm font-medium text-gray-800">{task.assignee_name || 'Unassigned'}</Text>
+          <Text className="text-sm text-gray-500 dark:text-gray-400 w-24">Assignee:</Text>
+          <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">{task.assignee_name || 'Unassigned'}</Text>
         </View>
         <View className="flex-row items-center">
-          <Text className="text-sm text-gray-500 w-24">Created At:</Text>
-          <Text className="text-sm font-medium text-gray-800">{new Date(task.created_at).toLocaleDateString()}</Text>
+          <Text className="text-sm text-gray-500 dark:text-gray-400 w-24">Created At:</Text>
+          <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">{new Date(task.created_at).toLocaleDateString()}</Text>
         </View>
       </View>
 
-      <Text className="text-lg font-bold text-gray-800 mb-3">Update Status</Text>
+      <Text className="text-lg font-bold text-gray-800 dark:text-white mb-3">Update Status</Text>
       <View className="flex-row gap-4 mb-8">
         {(['Pending', 'In Progress', 'Completed'] as const).map((s) => {
           let iconName: any = 'clock';
@@ -137,7 +141,7 @@ export default function TaskDetailsScreen() {
               className={`w-14 h-14 rounded-full items-center justify-center border-2 ${
                 status === s 
                   ? 'bg-polygon-orange border-polygon-orange' 
-                  : 'bg-white border-gray-200'
+                  : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
               } ${loading ? 'opacity-50' : ''}`}
             >
               <Feather 
@@ -155,9 +159,9 @@ export default function TaskDetailsScreen() {
         <TouchableOpacity 
           onPress={handleDelete}
           disabled={deleting}
-          className="bg-red-50 p-4 rounded-xl border border-red-200 mt-4"
+          className="bg-red-50 dark:bg-red-900/30 p-4 rounded-xl border border-red-200 dark:border-red-800 mt-4"
         >
-          <Text className="text-red-600 font-bold text-center">{deleting ? 'Deleting...' : 'Delete Task'}</Text>
+          <Text className="text-red-600 dark:text-red-400 font-bold text-center">{deleting ? 'Deleting...' : 'Delete Task'}</Text>
         </TouchableOpacity>
       )}
       </ScrollView>

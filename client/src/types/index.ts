@@ -36,16 +36,25 @@ export type AuthStackParamList = {
   Login: undefined;
 };
 
+export type AdminTabParamList = {
+  Dashboard: undefined;
+  Employees: undefined;
+  Profile: undefined;
+};
+
 export type AdminStackParamList = {
-  AdminDashboard: undefined;
-  EmployeesList: undefined;
+  AdminTabs: undefined;
   CreateEmployee: undefined;
   CreateTask: { task?: Task } | undefined;
   TaskDetails: { task: Task };
 };
 
-export type EmployeeStackParamList = {
-  EmployeeDashboard: undefined;
-  TaskDetails: { task: Task };
+export type EmployeeTabParamList = {
+  Dashboard: undefined;
   Profile: undefined;
+};
+
+export type EmployeeStackParamList = {
+  EmployeeTabs: undefined;
+  TaskDetails: { task: Task };
 };

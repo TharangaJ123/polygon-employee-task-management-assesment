@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Feather } from '@expo/vector-icons';
-import { logout } from '../store/slices/authSlice';
 import { RootState } from '../store';
+import { setTasks } from '../store/slices/tasksSlice';
 import { API_BASE_URL } from '../utils/api';
 import { Task, EmployeeStackParamList } from '../types';
 
@@ -15,9 +15,9 @@ export default function EmployeeDashboardScreen() {
   const dispatch = useDispatch();
   const navigation = useNavigation<EmployeeNavProp>();
   const { token, user } = useSelector((state: RootState) => state.auth);
+  const tasks = useSelector((state: RootState) => state.tasks.tasks);
   
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'All' | 'Pending' | 'In Progress' | 'Completed'>('All');
@@ -29,7 +29,7 @@ export default function EmployeeDashboardScreen() {
       });
       if (res.ok) {
         const data = await res.json();
-        setTasks(data);
+        dispatch(setTasks(data));
       }
     } catch (e) {
       console.error(e);
@@ -50,9 +50,6 @@ export default function EmployeeDashboardScreen() {
     fetchTasks();
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
-  };
 
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -62,7 +59,7 @@ export default function EmployeeDashboardScreen() {
   });
 
   return (
-    <View className="flex-1 bg-polygon-bg">
+    <View className="flex-1 bg-polygon-bg dark:bg-gray-900">
       <View className="bg-polygon-purple pt-14 pb-6 px-6 rounded-b-[30px] shadow-md mb-6 z-10">
         <View className="flex-row justify-between items-center">
           <View>
@@ -76,34 +73,22 @@ export default function EmployeeDashboardScreen() {
               Hello, {user?.name || 'Employee'}
             </Text>
           </View>
-          
           <View className="flex-row items-center gap-3">
-            <TouchableOpacity 
-              onPress={() => navigation.navigate('Profile')}
-              className="items-center justify-center bg-polygon-yellow w-10 h-10 rounded-lg"
-            >
-              <Feather name="user" size={20} color="#4D1D70" />
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              onPress={handleLogout}
-              className="items-center justify-center bg-white w-10 h-10 rounded-lg border border-polygon-pink"
-            >
-              <Feather name="log-out" size={20} color="#7F246C" />
-            </TouchableOpacity>
+            {/* Top buttons moved to bottom tabs */}
           </View>
         </View>
       </View>
 
       <View className="flex-1 px-6">
-        <Text className="text-lg font-bold text-gray-800 mb-4">Assigned Tasks</Text>
+        <Text className="text-lg font-bold text-gray-800 dark:text-white mb-4">Assigned Tasks</Text>
 
       <View className="mb-4">
-        <View className="flex-row items-center bg-white px-4 py-3 rounded-xl border border-gray-100 shadow-sm mb-3">
+        <View className="flex-row items-center bg-white dark:bg-gray-800 px-4 py-3 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm mb-3">
           <Feather name="search" size={20} color="#9CA3AF" />
           <TextInput 
-            className="flex-1 ml-3 text-base text-gray-800"
+            className="flex-1 ml-3 text-base text-gray-800 dark:text-white"
             placeholder="Search tasks..."
+            placeholderTextColor="#9CA3AF"
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -115,11 +100,11 @@ export default function EmployeeDashboardScreen() {
               key={status}
               onPress={() => setStatusFilter(status as any)}
               className={`px-4 py-2 rounded-full mr-2 ${
-                statusFilter === status ? 'bg-polygon-purple' : 'bg-white border border-gray-200'
+                statusFilter === status ? 'bg-polygon-purple' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
               }`}
             >
               <Text className={`font-medium ${
-                statusFilter === status ? 'text-white' : 'text-gray-600'
+                statusFilter === status ? 'text-white' : 'text-gray-600 dark:text-gray-300'
               }`}>{status}</Text>
             </TouchableOpacity>
           ))}
@@ -133,17 +118,17 @@ export default function EmployeeDashboardScreen() {
           data={filteredTasks}
           keyExtractor={(item) => item.id.toString()}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
-          ListEmptyComponent={<Text className="text-gray-500 text-center mt-10">No tasks assigned yet.</Text>}
+          ListEmptyComponent={<Text className="text-gray-500 dark:text-gray-400 text-center mt-10">No tasks assigned yet.</Text>}
           renderItem={({ item }) => (
             <TouchableOpacity 
               onPress={() => navigation.navigate('TaskDetails', { task: item })}
-              className="bg-white p-4 rounded-2xl mb-4 shadow-sm border border-gray-100"
+              className="bg-white dark:bg-gray-800 p-4 rounded-2xl mb-4 shadow-sm border border-gray-100 dark:border-gray-700"
             >
               <View className="flex-row justify-between items-start mb-2">
-                <Text className="text-lg font-bold text-gray-900 flex-1 mr-4" numberOfLines={1}>{item.title}</Text>
+                <Text className="text-lg font-bold text-gray-900 dark:text-white flex-1 mr-4" numberOfLines={1}>{item.title}</Text>
                 <View className={`p-2 rounded-full ${
-                  item.status === 'Completed' ? 'bg-green-100' :
-                  item.status === 'In Progress' ? 'bg-blue-100' : 'bg-gray-100'
+                  item.status === 'Completed' ? 'bg-green-100 dark:bg-green-900/30' :
+                  item.status === 'In Progress' ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-gray-100 dark:bg-gray-700'
                 }`}>
                   <Feather 
                     name={item.status === 'Completed' ? 'check-circle' : item.status === 'In Progress' ? 'play-circle' : 'clock'} 
@@ -152,7 +137,7 @@ export default function EmployeeDashboardScreen() {
                   />
                 </View>
               </View>
-              <Text className="text-sm text-gray-500 mb-2" numberOfLines={2}>{item.description}</Text>
+              <Text className="text-sm text-gray-500 dark:text-gray-400 mb-2" numberOfLines={2}>{item.description}</Text>
             </TouchableOpacity>
           )}
         />

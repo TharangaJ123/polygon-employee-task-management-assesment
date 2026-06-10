@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
+import { addTask, updateTask } from '../store/slices/tasksSlice';
+import { setEmployees } from '../store/slices/employeesSlice';
 import { API_BASE_URL } from '../utils/api';
 import { User, AdminStackParamList } from '../types';
 
@@ -11,34 +13,36 @@ type CreateTaskRouteProp = RouteProp<AdminStackParamList, 'CreateTask'>;
 
 export default function CreateTaskScreen() {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const route = useRoute<CreateTaskRouteProp>();
   const task = route.params?.task;
   const isEditing = !!task;
 
   const token = useSelector((state: RootState) => state.auth.token);
+  const employees = useSelector((state: RootState) => state.employees.employees);
   
   const [title, setTitle] = useState(task?.title || '');
   const [description, setDescription] = useState(task?.description || '');
   const [assigneeId, setAssigneeId] = useState<string>(task?.assignee_id ? String(task.assignee_id) : '');
-  const [employees, setEmployees] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
-  const [fetchingEmployees, setFetchingEmployees] = useState(true);
+  const [fetchingEmployees, setFetchingEmployees] = useState(false);
 
   useEffect(() => {
     fetchEmployees();
   }, []);
 
   const fetchEmployees = async () => {
+    setFetchingEmployees(true);
     try {
       const res = await fetch(`${API_BASE_URL}/users/employees`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const data = await res.json();
       if (res.ok) {
-        setEmployees(data);
+        const data = await res.json();
+        dispatch(setEmployees(data));
       }
     } catch (e) {
-      Alert.alert('Error', 'Failed to fetch employees');
+      console.error('Failed to fetch employees, using offline cache if available', e);
     } finally {
       setFetchingEmployees(false);
     }
@@ -74,6 +78,12 @@ export default function CreateTaskScreen() {
       });
 
       if (res.ok) {
+        const data = await res.json();
+        if (isEditing) {
+          dispatch(updateTask(data));
+        } else {
+          dispatch(addTask(data));
+        }
         Alert.alert('Success', `Task ${isEditing ? 'updated' : 'created'} successfully`);
         navigation.navigate('AdminDashboard' as any);
       } else {
@@ -88,7 +98,7 @@ export default function CreateTaskScreen() {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1 bg-polygon-bg">
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1 bg-polygon-bg dark:bg-gray-900">
       <View className="bg-polygon-purple pt-14 pb-6 px-6 rounded-b-[30px] shadow-md z-10">
         <View className="flex-row items-center">
           <TouchableOpacity 
@@ -108,20 +118,22 @@ export default function CreateTaskScreen() {
 
       <View className="space-y-4">
         <View>
-          <Text className="text-sm font-medium text-gray-700 mb-1">Title</Text>
+          <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</Text>
           <TextInput
-            className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-800"
+            className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-base text-gray-800 dark:text-white"
             placeholder="E.g., Review Q3 Report"
+            placeholderTextColor="#9CA3AF"
             value={title}
             onChangeText={setTitle}
           />
         </View>
 
         <View>
-          <Text className="text-sm font-medium text-gray-700 mb-1">Description</Text>
+          <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</Text>
           <TextInput
-            className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-800"
+            className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-base text-gray-800 dark:text-white"
             placeholder="Details about the task..."
+            placeholderTextColor="#9CA3AF"
             multiline
             numberOfLines={4}
             textAlignVertical="top"
@@ -131,24 +143,24 @@ export default function CreateTaskScreen() {
         </View>
 
         <View>
-          <Text className="text-sm font-medium text-gray-700 mb-1">Assign To Employee</Text>
+          <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assign To Employee</Text>
           {fetchingEmployees ? (
              <ActivityIndicator color="#D83363" />
           ) : (
             <View className="flex-row flex-wrap gap-2">
               <TouchableOpacity 
                 onPress={() => setAssigneeId('')}
-                className={`px-4 py-2 rounded-full border ${assigneeId === '' ? 'bg-polygon-yellow border-polygon-yellow' : 'bg-white border-gray-200'}`}
+                className={`px-4 py-2 rounded-full border ${assigneeId === '' ? 'bg-polygon-yellow border-polygon-yellow' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'}`}
               >
-                <Text className={assigneeId === '' ? 'text-white font-bold' : 'text-gray-600'}>Unassigned</Text>
+                <Text className={assigneeId === '' ? 'text-polygon-purple font-bold' : 'text-gray-600 dark:text-gray-300'}>Unassigned</Text>
               </TouchableOpacity>
               {employees.map(emp => (
                 <TouchableOpacity 
                   key={emp.id}
                   onPress={() => setAssigneeId(String(emp.id))}
-                  className={`px-4 py-2 rounded-full border ${assigneeId === String(emp.id) ? 'bg-polygon-purple border-polygon-purple' : 'bg-white border-gray-200'}`}
+                  className={`px-4 py-2 rounded-full border ${assigneeId === String(emp.id) ? 'bg-polygon-purple border-polygon-purple' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'}`}
                 >
-                  <Text className={assigneeId === String(emp.id) ? 'text-white font-bold' : 'text-gray-600'}>{emp.name}</Text>
+                  <Text className={assigneeId === String(emp.id) ? 'text-white font-bold' : 'text-gray-600 dark:text-gray-300'}>{emp.name}</Text>
                 </TouchableOpacity>
               ))}
             </View>
