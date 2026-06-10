@@ -130,6 +130,13 @@ export default function EmployeesListScreen() {
           )}
         />
       )}
+
+        <TouchableOpacity 
+          onPress={() => (navigation as any).navigate('CreateEmployee')}
+          className="absolute bottom-8 right-6 bg-polygon-red w-16 h-16 rounded-full items-center justify-center shadow-md"
+        >
+          <Feather name="user-plus" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
       </View>
     </View>
   );

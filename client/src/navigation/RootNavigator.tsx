@@ -11,6 +11,7 @@ import EmployeeDashboardScreen from '../screens/EmployeeDashboardScreen';
 import CreateTaskScreen from '../screens/CreateTaskScreen';
 import TaskDetailsScreen from '../screens/TaskDetailsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import CreateEmployeeScreen from '../screens/CreateEmployeeScreen';
 import { AuthStackParamList, AdminStackParamList, EmployeeStackParamList } from '../types';
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
@@ -33,6 +34,7 @@ function AdminNavigator() {
     <AdminStack.Navigator screenOptions={{ headerShown: false }}>
       <AdminStack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
       <AdminStack.Screen name="EmployeesList" component={EmployeesListScreen} />
+      <AdminStack.Screen name="CreateEmployee" component={CreateEmployeeScreen} />
       <AdminStack.Screen name="CreateTask" component={CreateTaskScreen} />
       <AdminStack.Screen name="TaskDetails" component={TaskDetailsScreen} />
     </AdminStack.Navigator>
