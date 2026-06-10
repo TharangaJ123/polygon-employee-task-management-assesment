@@ -47,7 +47,7 @@ export default function CreateEmployeeScreen() {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1 bg-polygon-bg">
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1 bg-polygon-bg dark:bg-gray-900">
       <View className="bg-polygon-purple pt-14 pb-6 px-6 rounded-b-[30px] shadow-md z-10">
         <View className="flex-row items-center">
           <TouchableOpacity 
@@ -66,9 +66,9 @@ export default function CreateEmployeeScreen() {
       <ScrollView className="flex-1 px-6 pt-6">
         <View className="space-y-4">
           <View>
-            <Text className="text-sm font-medium text-gray-700 mb-1 ml-1">Full Name</Text>
+            <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ml-1">Full Name</Text>
             <TextInput
-              className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-800"
+              className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-base text-gray-800 dark:text-white"
               placeholder="e.g., Jane Doe"
               value={name}
               onChangeText={setName}
@@ -76,9 +76,9 @@ export default function CreateEmployeeScreen() {
           </View>
 
           <View>
-            <Text className="text-sm font-medium text-gray-700 mb-1 ml-1">Email Address</Text>
+            <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ml-1">Email Address</Text>
             <TextInput
-              className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-800"
+              className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-base text-gray-800 dark:text-white"
               placeholder="employee@test.com"
               value={email}
               onChangeText={setEmail}
@@ -88,9 +88,9 @@ export default function CreateEmployeeScreen() {
           </View>
 
           <View>
-            <Text className="text-sm font-medium text-gray-700 mb-1 ml-1">Password</Text>
+            <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ml-1">Password</Text>
             <TextInput
-              className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-800"
+              className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-base text-gray-800 dark:text-white"
               placeholder="Create a strong password"
               value={password}
               onChangeText={setPassword}

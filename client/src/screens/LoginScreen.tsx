@@ -45,7 +45,7 @@ export default function LoginScreen() {
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-white items-center justify-center p-6"
+      className="flex-1 bg-white dark:bg-gray-900 items-center justify-center p-6"
     >
       <View className="w-full max-w-sm space-y-6">
         <View className="items-center mb-8">
@@ -55,25 +55,25 @@ export default function LoginScreen() {
             resizeMode="contain" 
           />
           <Text 
-            className="text-3xl font-extrabold text-polygon-purple mb-2 text-center" 
+            className="text-3xl font-extrabold text-polygon-purple dark:text-purple-400 mb-2 text-center" 
             numberOfLines={1} 
             adjustsFontSizeToFit
           >
             Welcome Back
           </Text>
-          <Text className="text-gray-500 text-center">
+          <Text className="text-gray-500 dark:text-gray-400 text-center">
             Log in to access your task management dashboard
           </Text>
-          <Text className="text-xs text-gray-400 mt-2 text-center">
+          <Text className="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center">
             Tip: Use admin@test.com (pwd: admin123) or employee@test.com (pwd: employee123).
           </Text>
         </View>
 
         <View className="space-y-4">
           <View>
-            <Text className="text-sm font-medium text-gray-700 mb-1 ml-1">Email</Text>
+            <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ml-1">Email</Text>
             <TextInput
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-800"
+              className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-base text-gray-800 dark:text-white"
               placeholder="Enter your email"
               value={email}
               onChangeText={setEmail}
@@ -84,9 +84,9 @@ export default function LoginScreen() {
           </View>
 
           <View>
-            <Text className="text-sm font-medium text-gray-700 mb-1 ml-1">Password</Text>
+            <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ml-1">Password</Text>
             <TextInput
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-800"
+              className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-base text-gray-800 dark:text-white"
               placeholder="Enter your password"
               value={password}
               onChangeText={setPassword}
