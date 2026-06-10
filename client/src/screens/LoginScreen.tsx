@@ -54,7 +54,13 @@ export default function LoginScreen() {
             className="w-48 h-48 mb-2" 
             resizeMode="contain" 
           />
-          <Text className="text-3xl font-extrabold text-polygon-purple mb-2">Welcome Back</Text>
+          <Text 
+            className="text-3xl font-extrabold text-polygon-purple mb-2 text-center" 
+            numberOfLines={1} 
+            adjustsFontSizeToFit
+          >
+            Welcome Back
+          </Text>
           <Text className="text-gray-500 text-center">
             Log in to access your task management dashboard
           </Text>

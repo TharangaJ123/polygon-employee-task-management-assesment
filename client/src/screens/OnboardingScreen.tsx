@@ -10,7 +10,17 @@ interface Props {
   navigation: OnboardingScreenNavigationProp;
 }
 
+import { useDispatch } from 'react-redux';
+import { completeOnboarding } from '../store/slices/authSlice';
+
 export default function OnboardingScreen({ navigation }: Props) {
+  const dispatch = useDispatch();
+
+  const handleGetStarted = () => {
+    dispatch(completeOnboarding());
+    navigation.navigate('Login');
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white items-center justify-between p-6">
       <View className="flex-1 w-full items-center justify-center pt-10">
@@ -30,7 +40,7 @@ export default function OnboardingScreen({ navigation }: Props) {
       <View className="w-full pb-8">
         <TouchableOpacity 
           className="w-full bg-polygon-red py-4 rounded-xl items-center shadow-sm active:opacity-80"
-          onPress={() => navigation.navigate('Login')}
+          onPress={handleGetStarted}
         >
           <Text className="text-white font-bold text-lg">Get Started</Text>
         </TouchableOpacity>

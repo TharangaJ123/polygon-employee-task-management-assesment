@@ -20,9 +20,9 @@ const EmployeeStack = createNativeStackNavigator<EmployeeStackParamList>();
 
 import OnboardingScreen from '../screens/OnboardingScreen';
 
-function AuthNavigator() {
+function AuthNavigator({ initialRouteName }: { initialRouteName: keyof AuthStackParamList }) {
   return (
-    <AuthStack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Onboarding">
+    <AuthStack.Navigator screenOptions={{ headerShown: false }} initialRouteName={initialRouteName}>
       <AuthStack.Screen name="Onboarding" component={OnboardingScreen} />
       <AuthStack.Screen name="Login" component={LoginScreen} />
     </AuthStack.Navigator>
@@ -52,12 +52,12 @@ function EmployeeNavigator() {
 }
 
 export default function RootNavigator() {
-  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, user, hasSeenOnboarding } = useSelector((state: RootState) => state.auth);
 
   return (
     <NavigationContainer>
       {!isAuthenticated || !user ? (
-        <AuthNavigator />
+        <AuthNavigator initialRouteName={hasSeenOnboarding ? "Login" : "Onboarding"} />
       ) : user.role === 'admin' ? (
         <AdminNavigator />
       ) : (
