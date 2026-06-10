@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, RefreshControl, TextInput, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, RefreshControl, TextInput, ScrollView, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -52,6 +52,31 @@ export default function AdminDashboardScreen() {
 
   const handleLogout = () => {
     dispatch(logout());
+  };
+
+  const handleDeleteTask = async (taskId: number) => {
+    Alert.alert('Delete Task', 'Are you sure you want to delete this task?', [
+      { text: 'Cancel', style: 'cancel' },
+      { 
+        text: 'Delete', 
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            const res = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
+              method: 'DELETE',
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+              fetchTasks(); // Refresh list silently
+            } else {
+              Alert.alert('Error', 'Failed to delete task');
+            }
+          } catch (e) {
+            Alert.alert('Error', 'Network error');
+          }
+        }
+      }
+    ]);
   };
 
   const filteredTasks = tasks.filter(task => {
@@ -139,14 +164,23 @@ export default function AdminDashboardScreen() {
             >
               <View className="flex-row justify-between items-start mb-2">
                 <Text className="text-lg font-bold text-gray-900 flex-1 mr-4" numberOfLines={1}>{item.title}</Text>
-                <View className={`px-2 py-1 rounded-md ${
-                  item.status === 'Completed' ? 'bg-green-100' :
-                  item.status === 'In Progress' ? 'bg-blue-100' : 'bg-gray-100'
-                }`}>
-                  <Text className={`text-xs font-bold ${
-                    item.status === 'Completed' ? 'text-green-700' :
-                    item.status === 'In Progress' ? 'text-blue-700' : 'text-gray-700'
-                  }`}>{item.status}</Text>
+                <View className="flex-row items-center gap-2">
+                  <View className={`p-2 rounded-full ${
+                    item.status === 'Completed' ? 'bg-green-100' :
+                    item.status === 'In Progress' ? 'bg-blue-100' : 'bg-gray-100'
+                  }`}>
+                    <Feather 
+                      name={item.status === 'Completed' ? 'check-circle' : item.status === 'In Progress' ? 'play-circle' : 'clock'} 
+                      size={16} 
+                      color={item.status === 'Completed' ? '#15803d' : item.status === 'In Progress' ? '#1d4ed8' : '#374151'} 
+                    />
+                  </View>
+                  <TouchableOpacity 
+                    onPress={() => handleDeleteTask(item.id)}
+                    className="p-1 bg-red-50 rounded-md ml-1"
+                  >
+                    <Feather name="trash-2" size={16} color="#EF4444" />
+                  </TouchableOpacity>
                 </View>
               </View>
               <Text className="text-sm text-gray-500 mb-2">Assignee: {item.assignee_name || 'Unassigned'}</Text>

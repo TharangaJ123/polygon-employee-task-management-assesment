@@ -28,7 +28,12 @@ export default function TaskDetailsScreen() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ status: newStatus })
+        body: JSON.stringify({ 
+          title: task.title,
+          description: task.description,
+          assignee_id: task.assignee_id,
+          status: newStatus 
+        })
       });
 
       if (res.ok) {
@@ -77,17 +82,27 @@ export default function TaskDetailsScreen() {
   return (
     <View className="flex-1 bg-polygon-bg">
       <View className="bg-polygon-purple pt-14 pb-6 px-6 rounded-b-[30px] shadow-md z-10">
-        <View className="flex-row items-center">
-          <TouchableOpacity 
-            onPress={() => navigation.goBack()}
-            className="mr-4 items-center justify-center bg-white/20 w-10 h-10 rounded-lg"
-          >
-            <Feather name="arrow-left" size={20} color="#FFFFFF" />
-          </TouchableOpacity>
-          <View>
-            <Text className="text-3xl font-extrabold text-white tracking-tight">Task Details</Text>
-            <Text className="text-purple-200 font-medium mt-1">View and update status</Text>
+        <View className="flex-row items-center justify-between">
+          <View className="flex-row items-center">
+            <TouchableOpacity 
+              onPress={() => navigation.goBack()}
+              className="mr-4 items-center justify-center bg-white/20 w-10 h-10 rounded-lg"
+            >
+              <Feather name="arrow-left" size={20} color="#FFFFFF" />
+            </TouchableOpacity>
+            <View>
+              <Text className="text-3xl font-extrabold text-white tracking-tight">Task Details</Text>
+              <Text className="text-purple-200 font-medium mt-1">View and update status</Text>
+            </View>
           </View>
+          {user?.role === 'admin' && (
+            <TouchableOpacity 
+              onPress={() => (navigation as any).navigate('CreateTask', { task })}
+              className="items-center justify-center bg-white/20 w-10 h-10 rounded-lg"
+            >
+              <Feather name="edit-2" size={20} color="#FFFFFF" />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
@@ -108,18 +123,32 @@ export default function TaskDetailsScreen() {
       </View>
 
       <Text className="text-lg font-bold text-gray-800 mb-3">Update Status</Text>
-      <View className="flex-row flex-wrap gap-2 mb-8">
-        {(['Pending', 'In Progress', 'Completed'] as const).map((s) => (
-          <TouchableOpacity
-            key={s}
-            onPress={() => handleUpdateStatus(s)}
-            disabled={loading}
-            className={`px-4 py-2 rounded-full border ${status === s ? 'bg-polygon-orange border-polygon-orange' : 'bg-white border-gray-200'} ${loading ? 'opacity-50' : ''}`}
-          >
-            <Text className={status === s ? 'text-white font-bold' : 'text-gray-600'}>{s}</Text>
-          </TouchableOpacity>
-        ))}
-        {loading && <ActivityIndicator color="#D55E36" className="ml-2" />}
+      <View className="flex-row gap-4 mb-8">
+        {(['Pending', 'In Progress', 'Completed'] as const).map((s) => {
+          let iconName: any = 'clock';
+          if (s === 'In Progress') iconName = 'play-circle';
+          if (s === 'Completed') iconName = 'check-circle';
+          
+          return (
+            <TouchableOpacity
+              key={s}
+              onPress={() => handleUpdateStatus(s)}
+              disabled={loading}
+              className={`w-14 h-14 rounded-full items-center justify-center border-2 ${
+                status === s 
+                  ? 'bg-polygon-orange border-polygon-orange' 
+                  : 'bg-white border-gray-200'
+              } ${loading ? 'opacity-50' : ''}`}
+            >
+              <Feather 
+                name={iconName} 
+                size={24} 
+                color={status === s ? '#FFFFFF' : '#4B5563'} 
+              />
+            </TouchableOpacity>
+          );
+        })}
+        {loading && <ActivityIndicator color="#D55E36" className="ml-2 self-center" />}
       </View>
 
       {user?.role === 'admin' && (

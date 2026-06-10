@@ -39,7 +39,7 @@ export type AuthStackParamList = {
 export type AdminStackParamList = {
   AdminDashboard: undefined;
   EmployeesList: undefined;
-  CreateTask: undefined;
+  CreateTask: { task?: Task } | undefined;
   TaskDetails: { task: Task };
 };
 
