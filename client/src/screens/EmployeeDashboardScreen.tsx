@@ -141,14 +141,15 @@ export default function EmployeeDashboardScreen() {
             >
               <View className="flex-row justify-between items-start mb-2">
                 <Text className="text-lg font-bold text-gray-900 flex-1 mr-4" numberOfLines={1}>{item.title}</Text>
-                <View className={`px-2 py-1 rounded-md ${
+                <View className={`p-2 rounded-full ${
                   item.status === 'Completed' ? 'bg-green-100' :
                   item.status === 'In Progress' ? 'bg-blue-100' : 'bg-gray-100'
                 }`}>
-                  <Text className={`text-xs font-bold ${
-                    item.status === 'Completed' ? 'text-green-700' :
-                    item.status === 'In Progress' ? 'text-blue-700' : 'text-gray-700'
-                  }`}>{item.status}</Text>
+                  <Feather 
+                    name={item.status === 'Completed' ? 'check-circle' : item.status === 'In Progress' ? 'play-circle' : 'clock'} 
+                    size={16} 
+                    color={item.status === 'Completed' ? '#15803d' : item.status === 'In Progress' ? '#1d4ed8' : '#374151'} 
+                  />
                 </View>
               </View>
               <Text className="text-sm text-gray-500 mb-2" numberOfLines={2}>{item.description}</Text>

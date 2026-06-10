@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { API_BASE_URL } from '../utils/api';
-import { User } from '../types';
+import { User, AdminStackParamList } from '../types';
+
+type CreateTaskRouteProp = RouteProp<AdminStackParamList, 'CreateTask'>;
 
 export default function CreateTaskScreen() {
   const navigation = useNavigation();
+  const route = useRoute<CreateTaskRouteProp>();
+  const task = route.params?.task;
+  const isEditing = !!task;
+
   const token = useSelector((state: RootState) => state.auth.token);
   
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [assigneeId, setAssigneeId] = useState<string>('');
+  const [title, setTitle] = useState(task?.title || '');
+  const [description, setDescription] = useState(task?.description || '');
+  const [assigneeId, setAssigneeId] = useState<string>(task?.assignee_id ? String(task.assignee_id) : '');
   const [employees, setEmployees] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [fetchingEmployees, setFetchingEmployees] = useState(true);
@@ -46,25 +52,33 @@ export default function CreateTaskScreen() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/tasks`, {
-        method: 'POST',
+      const endpoint = isEditing ? `${API_BASE_URL}/tasks/${task.id}` : `${API_BASE_URL}/tasks`;
+      const method = isEditing ? 'PUT' : 'POST';
+      const bodyPayload: any = {
+        title,
+        description,
+        assignee_id: assigneeId ? parseInt(assigneeId, 10) : null
+      };
+
+      if (isEditing) {
+        bodyPayload.status = task.status; // Keep existing status when editing
+      }
+
+      const res = await fetch(endpoint, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({
-          title,
-          description,
-          assignee_id: assigneeId ? parseInt(assigneeId, 10) : null
-        })
+        body: JSON.stringify(bodyPayload)
       });
 
       if (res.ok) {
-        Alert.alert('Success', 'Task created successfully');
-        navigation.goBack();
+        Alert.alert('Success', `Task ${isEditing ? 'updated' : 'created'} successfully`);
+        navigation.navigate('AdminDashboard' as any);
       } else {
         const data = await res.json();
-        Alert.alert('Error', data.message || 'Failed to create task');
+        Alert.alert('Error', data.message || `Failed to ${isEditing ? 'update' : 'create'} task`);
       }
     } catch (e) {
       Alert.alert('Error', 'Network error');
@@ -84,8 +98,8 @@ export default function CreateTaskScreen() {
             <Feather name="arrow-left" size={20} color="#FFFFFF" />
           </TouchableOpacity>
           <View>
-            <Text className="text-3xl font-extrabold text-white tracking-tight">Create Task</Text>
-            <Text className="text-purple-200 font-medium mt-1">Assign a new task to an employee</Text>
+            <Text className="text-3xl font-extrabold text-white tracking-tight">{isEditing ? 'Edit Task' : 'Create Task'}</Text>
+            <Text className="text-purple-200 font-medium mt-1">{isEditing ? 'Update task details' : 'Assign a new task to an employee'}</Text>
           </View>
         </View>
       </View>
@@ -147,7 +161,7 @@ export default function CreateTaskScreen() {
         onPress={handleCreateTask}
         disabled={loading}
       >
-        <Text className="text-white text-center font-bold text-lg">{loading ? 'Creating...' : 'Create Task'}</Text>
+        <Text className="text-white text-center font-bold text-lg">{loading ? (isEditing ? 'Updating...' : 'Creating...') : (isEditing ? 'Update Task' : 'Create Task')}</Text>
       </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
