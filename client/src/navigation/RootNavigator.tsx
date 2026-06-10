@@ -17,9 +17,12 @@ const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const AdminStack = createNativeStackNavigator<AdminStackParamList>();
 const EmployeeStack = createNativeStackNavigator<EmployeeStackParamList>();
 
+import OnboardingScreen from '../screens/OnboardingScreen';
+
 function AuthNavigator() {
   return (
-    <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+    <AuthStack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Onboarding">
+      <AuthStack.Screen name="Onboarding" component={OnboardingScreen} />
       <AuthStack.Screen name="Login" component={LoginScreen} />
     </AuthStack.Navigator>
   );
