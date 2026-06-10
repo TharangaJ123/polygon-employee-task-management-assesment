@@ -50,7 +50,7 @@ export default function LoginScreen() {
       <View className="w-full max-w-sm space-y-6">
         <View className="items-center mb-8">
           <Image 
-            source={require('../../assets/logo.png')} 
+            source={require('../../assets/logo-new.png')} 
             className="w-48 h-48 mb-2" 
             resizeMode="contain" 
           />
