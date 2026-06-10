@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Alert, Image } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { login } from '../store/slices/authSlice';
 import { User } from '../types';
@@ -49,6 +49,11 @@ export default function LoginScreen() {
     >
       <View className="w-full max-w-sm space-y-6">
         <View className="items-center mb-8">
+          <Image 
+            source={require('../../assets/logo.png')} 
+            className="w-48 h-48 mb-2" 
+            resizeMode="contain" 
+          />
           <Text className="text-3xl font-extrabold text-polygon-purple mb-2">Welcome Back</Text>
           <Text className="text-gray-500 text-center">
             Log in to access your task management dashboard

@@ -2,9 +2,23 @@ import pool from '../config/db.js';
 import { type IUser } from '../models/User.js';
 
 export class UserService {
-  static async getEmployees(): Promise<Partial<IUser>[]> {
-    const [rows] = await pool.query('SELECT id, name, email FROM users WHERE role = "employee" ORDER BY name ASC');
-    return rows as Partial<IUser>[];
+  static async getEmployees(): Promise<any[]> {
+    const [rows] = await pool.query(`
+      SELECT 
+        u.id, 
+        u.name, 
+        u.email,
+        COUNT(t.id) as total_tasks,
+        SUM(CASE WHEN t.status = 'Completed' THEN 1 ELSE 0 END) as completed_tasks,
+        SUM(CASE WHEN t.status = 'In Progress' THEN 1 ELSE 0 END) as in_progress_tasks,
+        SUM(CASE WHEN t.status = 'Pending' THEN 1 ELSE 0 END) as pending_tasks
+      FROM users u
+      LEFT JOIN tasks t ON u.id = t.assignee_id
+      WHERE u.role = 'employee'
+      GROUP BY u.id
+      ORDER BY u.name ASC
+    `);
+    return rows as any[];
   }
 
   static async updateProfileName(userId: number, name: string): Promise<void> {

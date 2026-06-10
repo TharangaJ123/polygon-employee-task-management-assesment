@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, RefreshControl, TextInput, ScrollView } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -19,6 +19,8 @@ export default function EmployeeDashboardScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Pending' | 'In Progress' | 'Completed'>('All');
 
   const fetchTasks = async () => {
     try {
@@ -52,38 +54,83 @@ export default function EmployeeDashboardScreen() {
     dispatch(logout());
   };
 
-  return (
-    <View className="flex-1 bg-polygon-bg p-6 pt-12">
-      <View className="flex-row justify-between items-center mb-6">
-        <View>
-          <Text className="text-2xl font-bold text-polygon-purple">My Dashboard</Text>
-          <Text className="text-gray-500 mt-1">Hello, {user?.name || 'Employee'}</Text>
-        </View>
-        
-        <View className="flex-row items-center gap-3">
-          <TouchableOpacity 
-            onPress={() => navigation.navigate('Profile')}
-            className="items-center justify-center bg-polygon-yellow w-10 h-10 rounded-lg"
-          >
-            <Feather name="user" size={20} color="#4D1D70" />
-          </TouchableOpacity>
+  const filteredTasks = tasks.filter(task => {
+    const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesStatus = statusFilter === 'All' || task.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
-          <TouchableOpacity 
-            onPress={handleLogout}
-            className="items-center justify-center bg-white w-10 h-10 rounded-lg border border-polygon-pink"
-          >
-            <Feather name="log-out" size={20} color="#7F246C" />
-          </TouchableOpacity>
+  return (
+    <View className="flex-1 bg-polygon-bg">
+      <View className="bg-polygon-purple pt-14 pb-6 px-6 rounded-b-[30px] shadow-md mb-6 z-10">
+        <View className="flex-row justify-between items-center">
+          <View>
+            <View className="flex-row items-center mb-1 gap-2">
+              <Feather name="grid" size={28} color="#FFFFFF" />
+              <Text className="text-3xl font-extrabold text-white tracking-tight">
+                My Dashboard
+              </Text>
+            </View>
+            <Text className="text-purple-200 font-medium ml-1">
+              Hello, {user?.name || 'Employee'}
+            </Text>
+          </View>
+          
+          <View className="flex-row items-center gap-3">
+            <TouchableOpacity 
+              onPress={() => navigation.navigate('Profile')}
+              className="items-center justify-center bg-polygon-yellow w-10 h-10 rounded-lg"
+            >
+              <Feather name="user" size={20} color="#4D1D70" />
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              onPress={handleLogout}
+              className="items-center justify-center bg-white w-10 h-10 rounded-lg border border-polygon-pink"
+            >
+              <Feather name="log-out" size={20} color="#7F246C" />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
-      <Text className="text-lg font-bold text-gray-800 mb-4">Assigned Tasks</Text>
+      <View className="flex-1 px-6">
+        <Text className="text-lg font-bold text-gray-800 mb-4">Assigned Tasks</Text>
+
+      <View className="mb-4">
+        <View className="flex-row items-center bg-white px-4 py-3 rounded-xl border border-gray-100 shadow-sm mb-3">
+          <Feather name="search" size={20} color="#9CA3AF" />
+          <TextInput 
+            className="flex-1 ml-3 text-base text-gray-800"
+            placeholder="Search tasks..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+          {['All', 'Pending', 'In Progress', 'Completed'].map((status) => (
+            <TouchableOpacity
+              key={status}
+              onPress={() => setStatusFilter(status as any)}
+              className={`px-4 py-2 rounded-full mr-2 ${
+                statusFilter === status ? 'bg-polygon-purple' : 'bg-white border border-gray-200'
+              }`}
+            >
+              <Text className={`font-medium ${
+                statusFilter === status ? 'text-white' : 'text-gray-600'
+              }`}>{status}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
       {loading ? (
         <ActivityIndicator size="large" color="#7F246C" className="mt-10" />
       ) : (
         <FlatList
-          data={tasks}
+          data={filteredTasks}
           keyExtractor={(item) => item.id.toString()}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
           ListEmptyComponent={<Text className="text-gray-500 text-center mt-10">No tasks assigned yet.</Text>}
@@ -109,6 +156,7 @@ export default function EmployeeDashboardScreen() {
           )}
         />
       )}
+      </View>
     </View>
   );
 }

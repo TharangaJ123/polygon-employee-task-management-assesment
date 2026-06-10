@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
@@ -48,13 +49,23 @@ export default function ProfileScreen() {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1 bg-polygon-bg p-6 pt-12">
-      <View className="flex-row items-center mb-8">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
-          <Text className="text-polygon-red font-bold text-lg">← Back</Text>
-        </TouchableOpacity>
-        <Text className="text-2xl font-bold text-polygon-purple flex-1">My Profile</Text>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1 bg-polygon-bg">
+      <View className="bg-polygon-purple pt-14 pb-6 px-6 rounded-b-[30px] shadow-md z-10">
+        <View className="flex-row items-center">
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            className="mr-4 items-center justify-center bg-white/20 w-10 h-10 rounded-lg"
+          >
+            <Feather name="arrow-left" size={20} color="#FFFFFF" />
+          </TouchableOpacity>
+          <View>
+            <Text className="text-3xl font-extrabold text-white tracking-tight">My Profile</Text>
+            <Text className="text-purple-200 font-medium mt-1">Manage your account</Text>
+          </View>
+        </View>
       </View>
+
+      <ScrollView className="flex-1 px-6 pt-6">
 
       <View className="space-y-4">
         <View>
@@ -79,12 +90,13 @@ export default function ProfileScreen() {
       </View>
 
       <TouchableOpacity 
-        className={`w-full bg-polygon-yellow rounded-xl py-4 mt-8 shadow-sm active:opacity-80 ${loading ? 'opacity-50' : ''}`}
+        className={`w-full bg-polygon-yellow rounded-xl py-4 mt-8 mb-12 shadow-sm active:opacity-80 ${loading ? 'opacity-50' : ''}`}
         onPress={handleUpdateProfile}
         disabled={loading}
       >
         <Text className="text-polygon-purple text-center font-extrabold text-lg">{loading ? 'Updating...' : 'Save Profile'}</Text>
       </TouchableOpacity>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }

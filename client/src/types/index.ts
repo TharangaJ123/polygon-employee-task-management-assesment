@@ -5,6 +5,11 @@ export interface User {
   email: string;
   role: Role;
   name?: string;
+  // Progress statistics
+  total_tasks?: number;
+  completed_tasks?: number;
+  in_progress_tasks?: number;
+  pending_tasks?: number;
 }
 
 export interface Task {
@@ -32,6 +37,7 @@ export type AuthStackParamList = {
 
 export type AdminStackParamList = {
   AdminDashboard: undefined;
+  EmployeesList: undefined;
   CreateTask: undefined;
   TaskDetails: { task: Task };
 };

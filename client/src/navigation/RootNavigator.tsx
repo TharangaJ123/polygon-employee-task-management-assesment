@@ -6,6 +6,7 @@ import { RootState } from '../store';
 
 import LoginScreen from '../screens/LoginScreen';
 import AdminDashboardScreen from '../screens/AdminDashboardScreen';
+import EmployeesListScreen from '../screens/EmployeesListScreen';
 import EmployeeDashboardScreen from '../screens/EmployeeDashboardScreen';
 import CreateTaskScreen from '../screens/CreateTaskScreen';
 import TaskDetailsScreen from '../screens/TaskDetailsScreen';
@@ -28,6 +29,7 @@ function AdminNavigator() {
   return (
     <AdminStack.Navigator screenOptions={{ headerShown: false }}>
       <AdminStack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
+      <AdminStack.Screen name="EmployeesList" component={EmployeesListScreen} />
       <AdminStack.Screen name="CreateTask" component={CreateTaskScreen} />
       <AdminStack.Screen name="TaskDetails" component={TaskDetailsScreen} />
     </AdminStack.Navigator>

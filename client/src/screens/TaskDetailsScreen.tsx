@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
@@ -74,13 +75,23 @@ export default function TaskDetailsScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-polygon-bg p-6 pt-12">
-      <View className="flex-row items-center mb-6">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
-          <Text className="text-polygon-red font-bold text-lg">← Back</Text>
-        </TouchableOpacity>
-        <Text className="text-2xl font-bold text-polygon-purple flex-1">Task Details</Text>
+    <View className="flex-1 bg-polygon-bg">
+      <View className="bg-polygon-purple pt-14 pb-6 px-6 rounded-b-[30px] shadow-md z-10">
+        <View className="flex-row items-center">
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            className="mr-4 items-center justify-center bg-white/20 w-10 h-10 rounded-lg"
+          >
+            <Feather name="arrow-left" size={20} color="#FFFFFF" />
+          </TouchableOpacity>
+          <View>
+            <Text className="text-3xl font-extrabold text-white tracking-tight">Task Details</Text>
+            <Text className="text-purple-200 font-medium mt-1">View and update status</Text>
+          </View>
+        </View>
       </View>
+
+      <ScrollView className="flex-1 px-6 pt-6">
 
       <View className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
         <Text className="text-xl font-bold text-gray-900 mb-2">{task.title}</Text>
@@ -120,6 +131,7 @@ export default function TaskDetailsScreen() {
           <Text className="text-red-600 font-bold text-center">{deleting ? 'Deleting...' : 'Delete Task'}</Text>
         </TouchableOpacity>
       )}
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
