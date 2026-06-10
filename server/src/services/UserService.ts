@@ -30,4 +30,12 @@ export class UserService {
     if (rows.length === 0) return null;
     return rows[0] as Partial<IUser>;
   }
+
+  static async createEmployee(name: string, email: string, passwordHash: string): Promise<number> {
+    const [result]: any = await pool.query(
+      'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
+      [name, email, passwordHash, 'employee']
+    );
+    return result.insertId;
+  }
 }
