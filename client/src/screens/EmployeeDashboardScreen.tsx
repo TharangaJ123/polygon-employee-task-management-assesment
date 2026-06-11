@@ -52,8 +52,8 @@ export default function EmployeeDashboardScreen() {
 
 
   const filteredTasks = tasks.filter(task => {
-    const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesSearch = task.title?.toLowerCase().includes(searchQuery?.toLowerCase() || '') || 
+                          (task.description && task.description?.toLowerCase().includes(searchQuery?.toLowerCase() || ''));
     const matchesStatus = statusFilter === 'All' || task.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
