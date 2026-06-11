@@ -1,0 +1,16 @@
+# EAS Build ignore
+.git/
+node_modules/
+dist/
+build/
+.expo/
+web-build/
+android/
+ios/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+.DS_Store
+.env*.local
