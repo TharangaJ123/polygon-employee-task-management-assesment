@@ -29,7 +29,7 @@ export default function CreateEmployeeScreen() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ name, email: email.toLowerCase(), password })
+        body: JSON.stringify({ name, email: email?.toLowerCase(), password })
       });
 
       if (res.ok) {

@@ -85,7 +85,7 @@ export default function CreateTaskScreen() {
           dispatch(addTask(data));
         }
         Alert.alert('Success', `Task ${isEditing ? 'updated' : 'created'} successfully`);
-        navigation.navigate('AdminDashboard' as any);
+        navigation.goBack();
       } else {
         const data = await res.json();
         Alert.alert('Error', data.message || `Failed to ${isEditing ? 'update' : 'create'} task`);
